@@ -1,6 +1,11 @@
 const { BN } = require("bn.js");
 const Block = require("./block");
 const Transaction = require("./transaction");
+const P2PServer = require("./p2p");
+
+const p2p = new P2PServer();
+
+p2p.listen();
 
 class Blockchain {
   constructor() {
@@ -21,6 +26,7 @@ class Blockchain {
     if (this.isValidBlock(oldBlock, newBlock)) {
       // TODO: 블록전파
       this.blockchain.push(newBlock);
+      p2p.broadcast(newBlock);
       console.log("추가된 블록", newBlock);
     }
   }
@@ -172,11 +178,17 @@ class Blockchain {
   }
 }
 
+const p2p2 = new P2PServer();
+const p2p3 = new P2PServer();
+const p2p4 = new P2PServer();
+const p2p5 = new P2PServer();
+
+p2p2.connectToPeer("ws://localhost:7545");
+p2p3.connectToPeer("ws://localhost:7545");
+p2p4.connectToPeer("ws://localhost:7545");
+p2p5.connectToPeer("ws://localhost:7545");
+
 const blockchain = new Blockchain();
-
-for (let i = 0; i < 10; i++) blockchain.mining();
-
-console.log(
-  "체인 유효성 검증",
-  blockchain.isValidBlockchain(blockchain.blockchain)
-);
+setTimeout(() => {
+  blockchain.mining();
+}, 1000);
