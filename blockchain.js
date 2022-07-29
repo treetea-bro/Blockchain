@@ -1,7 +1,6 @@
 const { BN } = require("bn.js");
 const Block = require("./block");
 const Transaction = require("./transaction");
-const P2PServer = require("./p2p");
 
 class Blockchain {
   constructor() {
@@ -73,7 +72,7 @@ class Blockchain {
   }
 
   // 채굴 - 난이도, 논스
-  mining() {
+  async mining() {
     // 코인베이스 트랜젝션 만들기
     const coinbaseTx = new Transaction("coinBase", "miner", 50);
 
@@ -107,17 +106,16 @@ class Blockchain {
     // 해시퍼즐을 찾는 작업
     const target = this.getTarget(newDifficulty);
     while (!(newBlock.getHash() <= target)) {
-      // console.log("목표값", target);
-      // console.log("논스", newBlock.nonce);
-      // console.log("해시값", newBlock.getHash());
       newBlock.nonce++;
+      await this.slowResolve();
     }
-    console.log("해시 퍼즐 값", target);
-    console.log("해시 퍼즐 정답 논스", newBlock.nonce);
-    console.log("해시 정답 값", newBlock.getHash());
     newBlock.hash = newBlock.getHash();
     // 블록체인에 블록을 넣어주기
     this.addBlock(newBlock);
+  }
+
+  slowResolve() {
+    return new Promise((resolve) => setTimeout(resolve.bind(), 0));
   }
 
   // 자가제한시스템

@@ -1,7 +1,5 @@
 const WebSocket = require("ws");
 const Message = require("./message");
-const Blockchain = require("./blockchain");
-const Transaction = require("./transaction");
 
 class P2PServer {
   constructor(bc) {
